@@ -22,6 +22,14 @@ applications:
             - key: Cache-Control
               value: public, max-age=0, must-revalidate
       customRules:
+        # Proxy API to Elastic Beanstalk (avoids HTTPS→HTTP mixed-content block in browser)
+        # Update the target host if your EB URL changes
+        - source: '/api/<*>'
+          target: 'http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/api/<*>'
+          status: '200'
+        - source: '/uploads/<*>'
+          target: 'http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/uploads/<*>'
+          status: '200'
         - source: '/<*>'
           target: '/index.html'
           status: '404-200'
