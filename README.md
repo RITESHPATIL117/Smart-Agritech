@@ -155,7 +155,7 @@ NODE_ENV=development
 
 Step-by-step guide: **[DEPLOY_AWS.md](./DEPLOY_AWS.md)**
 
-- **Frontend:** AWS Amplify Hosting (app root: `client`, see `client/amplify.yml`)
+- **Frontend:** AWS Amplify Hosting (monorepo app root: `client`, see root `amplify.yml`)
 - **Backend:** AWS Elastic Beanstalk (deploy `server/` folder)
 - **Database:** MongoDB Atlas
 - **Production env:** `VITE_API_URL` (client) + `CLIENT_URL` (server CORS)

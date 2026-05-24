@@ -97,14 +97,22 @@ npm run seed
 3. Connect **GitHub** → select `SmartAgriTech` repo
 4. **Branch:** `main` (or your default branch)
 5. **Monorepo / app settings** (important):
-   - **Root directory (app root):** `client`
-   - Amplify uses `client/amplify.yml` automatically
-   - Do **not** use the repository root as app root
+   - **Monorepo app root:** `client`
+   - Build spec: **`amplify.yml` at repository root** (must include `applications:` — see repo file)
+   - Do not use a plain `frontend:`-only `amplify.yml` without `applications` when monorepo is enabled
 6. **Environment variables** (Amplify → App settings → Environment variables):
 
 | Key | Value |
 |-----|--------|
-| `VITE_API_URL` | `https://YOUR-EB-URL.elasticbeanstalk.com` |
+| `VITE_API_URL` | `http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com` |
+
+**Important:** Value is the URL only (starts with `http://`). Do **not** paste `VITE_API_URL=` inside the value field.
+
+After changing this variable you must **redeploy** Amplify (Vite bakes it in at build time).
+
+On Elastic Beanstalk set `CLIENT_URL` to your Amplify URL for CORS, e.g. `https://main.dcrtxpglm2gge.amplifyapp.com`
+
+**Mixed content note:** Amplify uses HTTPS; EB uses HTTP. Some browsers block HTTPS pages calling HTTP APIs. If login fails with "mixed content" or blocked requests, either enable **HTTPS on EB** (ACM certificate on load balancer) or use the `/api` proxy rules in `amplify.yml` + leave `VITE_API_URL` empty.
 
 **Common mistake (causes 404 on Amplify):**
 
@@ -163,6 +171,7 @@ Amplify → **Redeploy this version** (or push a git commit) after setting `VITE
 | Blank page after refresh on Amplify | `amplify.yml` includes SPA redirect rule |
 | Login works locally, not prod | `VITE_API_URL` must be EB URL; rebuild Amplify after changing |
 | URL contains `/VITE_API_URL=https://...` on Amplify domain | Fix Amplify env: **value** = URL only, not `VITE_API_URL=https://...`; redeploy |
+| `ERR_CONNECTION_TIMED_OUT` to `http://...elasticbeanstalk.com` | Mixed content / network: use **empty** `VITE_API_URL` + `amplify.yml` API proxy; redeploy Amplify |
 | Disease upload fails | Nginx limit: `server/.platform/nginx/conf.d/upload_size.conf` included |
 | Gemini errors | Confirm `GEMINI_API_KEY` in EB env properties |
 

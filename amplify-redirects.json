@@ -1,0 +1,20 @@
+[
+  {
+    "source": "/api/<*>",
+    "target": "http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/api/<*>",
+    "status": "200",
+    "condition": null
+  },
+  {
+    "source": "/uploads/<*>",
+    "target": "http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/uploads/<*>",
+    "status": "200",
+    "condition": null
+  },
+  {
+    "source": "/<*>",
+    "target": "/index.html",
+    "status": "404",
+    "condition": null
+  }
+]

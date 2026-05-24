@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api';
 
+// All API calls use paths like '/api/auth/login' — baseURL must be EB origin (no /api suffix)
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {

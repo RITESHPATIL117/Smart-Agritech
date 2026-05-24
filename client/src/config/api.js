@@ -1,38 +1,34 @@
 /**
- * API base URL for axios.
- * - Local dev: empty → Vite proxies /api to localhost:5000
- * - Amplify: empty → same-origin /api (proxied to EB in root amplify.yml)
- * - Direct EB: set VITE_API_URL to http://your-env.elasticbeanstalk.com (not https unless SSL is enabled on EB)
+ * Backend origin — no trailing slash.
+ * Local dev: leave empty (Vite proxies /api → localhost:5000).
+ * Production (Amplify): set VITE_API_URL to your Elastic Beanstalk URL.
+ *
+ * Example:
+ *   http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com
  */
 const raw = (import.meta.env.VITE_API_URL || '').trim();
-const withoutKeyPrefix = raw.replace(/^VITE_API_URL\s*=\s*/i, '').replace(/\/$/, '');
 
-const isAmplifyHost = () => {
-  if (typeof window === 'undefined') return false;
-  const h = window.location.hostname;
-  return h.endsWith('amplifyapp.com') || h.includes('.amplifyapp.');
-};
+// Fix mistaken Amplify paste: "VITE_API_URL=https://..." in the value field
+const cleaned = raw.replace(/^VITE_API_URL\s*=\s*/i, '');
 
-const resolveApiBase = () => {
-  // Always use same-origin on Amplify so /api proxy works (avoids HTTPS→HTTP CORS/preflight/timeouts)
-  if (isAmplifyHost()) {
-    return '';
-  }
-  return withoutKeyPrefix;
-};
-
-export const API_BASE_URL = resolveApiBase();
+export const API_BASE_URL = cleaned.replace(/\/$/, '');
 
 if (import.meta.env.PROD && typeof window !== 'undefined') {
-  console.info(
-    '[Smart AgriTech] API:',
-    API_BASE_URL || `${window.location.origin}/api (proxied to backend)`
-  );
+  if (!API_BASE_URL) {
+    console.error(
+      '[Smart AgriTech] VITE_API_URL is missing. Set it in Amplify → Environment variables and redeploy.'
+    );
+  } else {
+    console.info('[Smart AgriTech] API_BASE_URL:', API_BASE_URL);
+  }
 }
 
-if (import.meta.env.DEV && raw && !withoutKeyPrefix.startsWith('http')) {
-  console.warn(
-    '[Smart AgriTech] VITE_API_URL must start with http:// or https://. Got:',
-    raw
-  );
+if (import.meta.env.DEV && API_BASE_URL && !API_BASE_URL.startsWith('http')) {
+  console.warn('[Smart AgriTech] VITE_API_URL should start with http:// or https://');
 }
+
+/** Build full URL for fetch() if needed */
+export const apiUrl = (path) => {
+  const p = path.startsWith('/') ? path : `/${path}`;
+  return API_BASE_URL ? `${API_BASE_URL}${p}` : p;
+};
