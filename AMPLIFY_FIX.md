@@ -10,7 +10,8 @@
 
 ### Step 1 — Amplify Console → App settings → General
 
-- **Monorepo app root:** leave **EMPTY** (clear the field — use repository root, not `client`)
+- **Monorepo app root:** set to **`client`** (must match `amplify.yml` `appRoot: client`)
+- Do **not** use `cd client` in build commands when app root is already `client`
 
 ### Step 2 — Environment variables
 

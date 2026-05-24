@@ -44,7 +44,8 @@ A full-stack web application that empowers farmers with **Google Gemini AI** rec
 
 **Planned extensions:** Azure App Service + Blob Storage deployment, IoT soil sensors, CNN disease model, online payments, equipment rental, labor portal.
 
-> **Presenting?** See [PRESENTATION.md](./PRESENTATION.md), [ARCHITECTURE.md](./ARCHITECTURE.md), [TESTING.md](./TESTING.md).
+> **Presenting?** See [PRESENTATION.md](./PRESENTATION.md).  
+> **AWS frontend + local API?** See [HOST_FRONTEND_AWS.md](./HOST_FRONTEND_AWS.md).
 
 ---
 

@@ -1,27 +1,24 @@
-# Build from repo root — in Amplify Console set "Monorepo app root" to EMPTY (not "client")
+# Frontend-only hosting on Amplify (app root = client)
+# For live API during demo use localhost (see HOST_FRONTEND_AWS.md) — do not set http:// EB URL on HTTPS Amplify
 version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - cd client && npm ci
-    build:
-      commands:
-        - cd client && npm run build
-  artifacts:
-    baseDirectory: client/dist
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - client/node_modules/**/*
-  customRedirects:
-    - source: '/api/<*>'
-      target: 'http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/api/<*>'
-      status: '200'
-    - source: '/uploads/<*>'
-      target: 'http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/uploads/<*>'
-      status: '200'
-    - source: '/<*>'
-      target: '/index.html'
-      status: '404-200'
+applications:
+  - appRoot: client
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+      customRules:
+        - source: '/<*>'
+          target: '/index.html'
+          status: '404-200'

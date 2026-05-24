@@ -110,9 +110,14 @@ mongoose
   });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+  if (HOST === '0.0.0.0') {
+    console.log('   (LAN access enabled — set CLIENT_URL for your S3/Amplify URL in .env)');
+  }
 });
 
 module.exports = app;
