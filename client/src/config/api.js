@@ -1,33 +1,48 @@
 /**
- * Backend origin — no trailing slash.
- * Local dev: leave empty (Vite proxies /api → localhost:5000).
- * Production (Amplify): set VITE_API_URL to your Elastic Beanstalk URL.
+ * API base URL for axios (origin only, no trailing slash).
  *
- * Example:
- *   http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com
+ * Local dev: leave VITE_API_URL empty → Vite proxies /api to localhost:5000.
+ *
+ * Amplify (HTTPS): MUST use empty baseURL + relative /api/... paths.
+ * Amplify customRedirects proxy /api → Elastic Beanstalk (HTTP) server-side.
+ * Browsers block HTTPS pages from calling http:// APIs (mixed content).
  */
 const raw = (import.meta.env.VITE_API_URL || '').trim();
+const cleaned = raw.replace(/^VITE_API_URL\s*=\s*/i, '').replace(/\/$/, '');
 
-// Fix mistaken Amplify paste: "VITE_API_URL=https://..." in the value field
-const cleaned = raw.replace(/^VITE_API_URL\s*=\s*/i, '');
+const isBrowser = typeof window !== 'undefined';
+const isAmplifyHost =
+  isBrowser &&
+  (window.location.hostname.endsWith('amplifyapp.com') ||
+    window.location.hostname.includes('.amplifyapp.'));
+const isHttpsPage = isBrowser && window.location.protocol === 'https:';
+const isInsecureBackend = cleaned.startsWith('http://');
 
-export const API_BASE_URL = cleaned.replace(/\/$/, '');
+/** HTTPS frontend cannot call HTTP backend — use same-origin /api proxy on Amplify */
+const mustUseSameOriginProxy =
+  isAmplifyHost || (isHttpsPage && isInsecureBackend);
 
-if (import.meta.env.PROD && typeof window !== 'undefined') {
-  if (!API_BASE_URL) {
-    console.error(
-      '[Smart AgriTech] VITE_API_URL is missing. Set it in Amplify → Environment variables and redeploy.'
+export const API_BASE_URL = mustUseSameOriginProxy ? '' : cleaned;
+
+if (import.meta.env.PROD && isBrowser) {
+  if (mustUseSameOriginProxy) {
+    console.info(
+      '[Smart AgriTech] API: same-origin',
+      `${window.location.origin}/api/*`,
+      '(proxied to Elastic Beanstalk — required for HTTPS Amplify + HTTP backend)'
     );
-  } else {
+    if (cleaned) {
+      console.warn(
+        '[Smart AgriTech] VITE_API_URL is set but ignored on HTTPS to avoid mixed content. Remove it in Amplify env vars.'
+      );
+    }
+  } else if (API_BASE_URL) {
     console.info('[Smart AgriTech] API_BASE_URL:', API_BASE_URL);
+  } else {
+    console.warn('[Smart AgriTech] VITE_API_URL is empty.');
   }
 }
 
-if (import.meta.env.DEV && API_BASE_URL && !API_BASE_URL.startsWith('http')) {
-  console.warn('[Smart AgriTech] VITE_API_URL should start with http:// or https://');
-}
-
-/** Build full URL for fetch() if needed */
 export const apiUrl = (path) => {
   const p = path.startsWith('/') ? path : `/${path}`;
   return API_BASE_URL ? `${API_BASE_URL}${p}` : p;
