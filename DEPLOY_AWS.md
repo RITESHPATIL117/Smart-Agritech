@@ -106,7 +106,16 @@ npm run seed
 |-----|--------|
 | `VITE_API_URL` | `https://YOUR-EB-URL.elasticbeanstalk.com` |
 
-7. **Save and deploy** (first build ~3–5 min)
+**Common mistake (causes 404 on Amplify):**
+
+| Wrong | Right |
+|-------|--------|
+| Value = `VITE_API_URL=https://your-api.elasticbeanstalk.com` | Value = `https://your-api.elasticbeanstalk.com` only |
+| Key empty, value contains `VITE_API_URL=...` | Key = `VITE_API_URL`, value = URL only |
+
+The value must start with `https://` so the browser calls Elastic Beanstalk, not a path on `amplifyapp.com`.
+
+7. **Save and deploy** (first build ~3–5 min) — **redeploy after changing env vars** (Vite bakes them in at build time)
 8. Copy your Amplify URL, e.g. `https://main.d1abc2def3.amplifyapp.com`
 
 ### Fix CORS on backend
@@ -153,6 +162,7 @@ Amplify → **Redeploy this version** (or push a git commit) after setting `VITE
 | API 502 on EB | Check EB logs: Logs → Request logs; verify `MONGODB_URI` |
 | Blank page after refresh on Amplify | `amplify.yml` includes SPA redirect rule |
 | Login works locally, not prod | `VITE_API_URL` must be EB URL; rebuild Amplify after changing |
+| URL contains `/VITE_API_URL=https://...` on Amplify domain | Fix Amplify env: **value** = URL only, not `VITE_API_URL=https://...`; redeploy |
 | Disease upload fails | Nginx limit: `server/.platform/nginx/conf.d/upload_size.conf` included |
 | Gemini errors | Confirm `GEMINI_API_KEY` in EB env properties |
 
