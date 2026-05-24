@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .motion-safe {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 text-white px-4 py-2 rounded-lg font-medium
+      hover:bg-primary-700 hover:shadow-md
+      active:scale-[0.98]
+      transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply text-white px-4 py-2 rounded-lg font-medium
+      hover:shadow-md active:scale-[0.98] transition-all duration-200;
+    background-color: theme('colors.secondary.500');
+  }
+
+  .btn-secondary:hover {
+    background-color: theme('colors.secondary.600');
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-md p-6
+      transition-all duration-300 ease-out;
+  }
+
+  .card-interactive {
+    @apply card hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg
+      focus:ring-2 focus:ring-primary-500 focus:border-transparent
+      outline-none bg-white text-gray-900
+      transition-shadow duration-200;
+  }
+
+  .page-heading {
+    @apply text-3xl font-bold text-gray-900 animate-slide-up;
+  }
+
+  .page-subtext {
+    @apply text-gray-600 mt-2 animate-fade-in;
+    animation-delay: 0.1s;
+    animation-fill-mode: both;
+  }
+
+  .ai-banner {
+    @apply mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-900;
+  }
+
+  .hero-blob {
+    @apply absolute rounded-full blur-3xl opacity-20 pointer-events-none;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .nav-link {
+    @apply relative transition-colors duration-200 hover:text-primary-100;
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      theme('colors.gray.100') 0%,
+      theme('colors.gray.200') 50%,
+      theme('colors.gray.100') 100%
+    );
+    background-size: 200% 100%;
+    @apply animate-shimmer;
+  }
+}
+
+@keyframes scanMove {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.scan-line {
+  animation: scanMove 2s ease-in-out infinite;
+}
