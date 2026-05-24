@@ -23,6 +23,15 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// Match routes with or without trailing slash (Amplify may add trailing slashes)
+app.use((req, res, next) => {
+  if (req.path.length > 1 && req.path.endsWith('/')) {
+    const query = req.url.includes('?') ? req.url.slice(req.path.length) : '';
+    return res.redirect(308, req.path.slice(0, -1) + query);
+  }
+  next();
+});
+
 const allowedOrigins = process.env.CLIENT_URL
   ? process.env.CLIENT_URL.split(',').map((o) => o.trim())
   : true;
