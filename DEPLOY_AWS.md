@@ -96,9 +96,10 @@ npm run seed
 2. **Create new app** → **Host web app**
 3. Connect **GitHub** → select `SmartAgriTech` repo
 4. **Branch:** `main` (or your default branch)
-5. Amplify detects `amplify.yml` at repo root — confirm:
-   - App root: repository root
-   - Build spec: `amplify.yml`
+5. **Monorepo / app settings** (important):
+   - **Root directory (app root):** `client`
+   - Amplify uses `client/amplify.yml` automatically
+   - Do **not** use the repository root as app root
 6. **Environment variables** (Amplify → App settings → Environment variables):
 
 | Key | Value |
