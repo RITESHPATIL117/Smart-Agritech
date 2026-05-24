@@ -104,15 +104,17 @@ npm run seed
 
 | Key | Value |
 |-----|--------|
-| `VITE_API_URL` | `http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com` |
+| `VITE_API_URL` | **(delete / leave empty)** |
 
-**Important:** Value is the URL only (starts with `http://`). Do **not** paste `VITE_API_URL=` inside the value field.
+**Why:** Amplify is **HTTPS**. Elastic Beanstalk is **HTTP**. Browsers **block** `https://amplifyapp.com` → `http://elasticbeanstalk.com` (mixed content).
 
-After changing this variable you must **redeploy** Amplify (Vite bakes it in at build time).
+**Correct setup:**
+1. **Delete** `VITE_API_URL` in Amplify environment variables (or leave value blank).
+2. App calls `https://YOUR-amplify-url.amplifyapp.com/api/...` (same origin).
+3. `amplify.yml` **`customRedirects`** proxy `/api/*` → your EB URL (server-side, no mixed content).
+4. If `/api/health` returns 404, paste `amplify-redirects.json` into Amplify Console → **Rewrites and redirects**.
 
-On Elastic Beanstalk set `CLIENT_URL` to your Amplify URL for CORS, e.g. `https://main.dcrtxpglm2gge.amplifyapp.com`
-
-**Mixed content note:** Amplify uses HTTPS; EB uses HTTP. Some browsers block HTTPS pages calling HTTP APIs. If login fails with "mixed content" or blocked requests, either enable **HTTPS on EB** (ACM certificate on load balancer) or use the `/api` proxy rules in `amplify.yml` + leave `VITE_API_URL` empty.
+On Elastic Beanstalk set `CLIENT_URL` to your Amplify URL, e.g. `https://main.dy7ok62s84b3g.amplifyapp.com`
 
 **Common mistake (causes 404 on Amplify):**
 
@@ -172,6 +174,7 @@ Amplify → **Redeploy this version** (or push a git commit) after setting `VITE
 | Login works locally, not prod | `VITE_API_URL` must be EB URL; rebuild Amplify after changing |
 | URL contains `/VITE_API_URL=https://...` on Amplify domain | Fix Amplify env: **value** = URL only, not `VITE_API_URL=https://...`; redeploy |
 | `ERR_CONNECTION_TIMED_OUT` to `http://...elasticbeanstalk.com` | Mixed content / network: use **empty** `VITE_API_URL` + `amplify.yml` API proxy; redeploy Amplify |
+| `Mixed Content` blocked XMLHttpRequest to `http://...elasticbeanstalk.com` | **Delete** `VITE_API_URL` in Amplify; redeploy; test `https://YOUR-amplify-url/api/health` |
 | Disease upload fails | Nginx limit: `server/.platform/nginx/conf.d/upload_size.conf` included |
 | Gemini errors | Confirm `GEMINI_API_KEY` in EB env properties |
 

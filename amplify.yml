@@ -1,34 +1,27 @@
+# Build from repo root — in Amplify Console set "Monorepo app root" to EMPTY (not "client")
 version: 1
-applications:
-  - appRoot: client
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - npm ci
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: dist
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*
-      customHeaders:
-        - pattern: '**/*'
-          headers:
-            - key: Cache-Control
-              value: public, max-age=0, must-revalidate
-      customRedirects:
-        # Proxy /api to Elastic Beanstalk (must use customRedirects, not customRules)
-        - source: '/api/<*>'
-          target: 'http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/api/<*>'
-          status: '200'
-        - source: '/uploads/<*>'
-          target: 'http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/uploads/<*>'
-          status: '200'
-        - source: '/<*>'
-          target: '/index.html'
-          status: '404-200'
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd client && npm ci
+    build:
+      commands:
+        - cd client && npm run build
+  artifacts:
+    baseDirectory: client/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - client/node_modules/**/*
+  customRedirects:
+    - source: '/api/<*>'
+      target: 'http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/api/<*>'
+      status: '200'
+    - source: '/uploads/<*>'
+      target: 'http://smart-agritech-env.eba-mjmv3nxz.us-east-1.elasticbeanstalk.com/uploads/<*>'
+      status: '200'
+    - source: '/<*>'
+      target: '/index.html'
+      status: '404-200'
